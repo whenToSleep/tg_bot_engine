@@ -225,8 +225,8 @@ class MyModule:
 ## Resources
 
 - [Engine Documentation](../../docs/API_REFERENCE.md)
-- [Templates Guide](../../docs/TEMPLATES_GUIDE.md)
-- [Quick Start Guide](../../docs/QUICKSTART_GAME.md)
+- [Technical Documentation](../../docs/TECHNICAL_DOCUMENTATION.md)
+- [Quick Start Guide](../../docs/QUICKSTART.md)
 
 ## License
 

@@ -10,7 +10,7 @@ as the persistent storage backend. Features include:
 
 import sqlite3
 import json
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pathlib import Path
 
 from engine.core.repository import EntityRepository
@@ -281,4 +281,172 @@ class SQLiteRepository(EntityRepository):
         cursor.execute("DELETE FROM entities")
         conn.commit()
         conn.close()
+    
+    # Referral System Implementation (v0.6.0+)
+    
+    def get_referral_tree(
+        self,
+        player_id: str,
+        depth: int = 1,
+        include_stats: bool = False
+    ) -> Dict[str, Any]:
+        """Get referral tree for a player.
+        
+        Args:
+            player_id: Root player ID
+            depth: How many levels deep to traverse
+            include_stats: Whether to include aggregated stats
+            
+        Returns:
+            Dictionary with referral tree structure
+        """
+        player = self.load(player_id)
+        if not player:
+            raise ValueError(f"Player {player_id} not found")
+        
+        # Build tree level by level
+        referral_tree = {}
+        all_referrals = []
+        current_level = [player_id]
+        
+        for level in range(1, depth + 1):
+            next_level = []
+            for pid in current_level:
+                referrals = self.get_direct_referrals(pid)
+                next_level.extend(referrals)
+            
+            referral_tree[f"level_{level}"] = next_level
+            all_referrals.extend(next_level)
+            current_level = next_level
+            
+            if not next_level:
+                break  # No more referrals
+        
+        result = {
+            "player_id": player_id,
+            "direct_referrals": referral_tree.get("level_1", []),
+            "total_referrals": len(all_referrals),
+            "referral_tree": referral_tree
+        }
+        
+        # Add stats if requested
+        if include_stats:
+            stats = self._calculate_referral_stats(all_referrals)
+            result["stats"] = stats
+        
+        return result
+    
+    def add_referral(
+        self,
+        referrer_id: str,
+        referred_id: str
+    ) -> bool:
+        """Create a referral link between two players.
+        
+        Args:
+            referrer_id: Player who referred
+            referred_id: Player who was referred
+            
+        Returns:
+            True if link created, False if already exists
+        """
+        # Verify both players exist
+        referrer = self.load(referrer_id)
+        referred = self.load(referred_id)
+        
+        if not referrer:
+            raise ValueError(f"Referrer {referrer_id} not found")
+        if not referred:
+            raise ValueError(f"Referred player {referred_id} not found")
+        
+        # Check if referral already exists
+        if referred.get("referrer_id"):
+            return False  # Already has a referrer
+        
+        # Add referrer_id to referred player
+        referred["referrer_id"] = referrer_id
+        referred["_version"] = referred.get("_version", 1) + 1
+        self.save(referred_id, referred)
+        
+        # Add to referrer's referral list
+        if "referrals" not in referrer:
+            referrer["referrals"] = []
+        
+        if referred_id not in referrer["referrals"]:
+            referrer["referrals"].append(referred_id)
+            referrer["_version"] = referrer.get("_version", 1) + 1
+            self.save(referrer_id, referrer)
+        
+        return True
+    
+    def get_referrer(self, player_id: str) -> Optional[str]:
+        """Get the player who referred this player.
+        
+        Args:
+            player_id: Player to query
+            
+        Returns:
+            Referrer's player ID or None
+        """
+        player = self.load(player_id)
+        if not player:
+            return None
+        
+        return player.get("referrer_id")
+    
+    def get_direct_referrals(self, player_id: str) -> List[str]:
+        """Get list of players directly referred by this player.
+        
+        Args:
+            player_id: Player to query
+            
+        Returns:
+            List of referred player IDs
+        """
+        player = self.load(player_id)
+        if not player:
+            return []
+        
+        return player.get("referrals", [])
+    
+    def _calculate_referral_stats(self, referral_ids: List[str]) -> Dict[str, Any]:
+        """Calculate aggregated stats for a list of referrals.
+        
+        Args:
+            referral_ids: List of referred player IDs
+            
+        Returns:
+            Dictionary with aggregated statistics
+        """
+        if not referral_ids:
+            return {
+                "total_spending": 0,
+                "active_referrals": 0,
+                "total_referrals": 0,
+                "average_level": 0
+            }
+        
+        total_spending = 0
+        active_count = 0
+        total_levels = 0
+        
+        for player_id in referral_ids:
+            player = self.load(player_id)
+            if player:
+                # Count spending
+                total_spending += player.get("total_spent", 0)
+                
+                # Count active (played in last 7 days, for example)
+                if player.get("is_active", False):
+                    active_count += 1
+                
+                # Sum levels
+                total_levels += player.get("level", 1)
+        
+        return {
+            "total_spending": total_spending,
+            "active_referrals": active_count,
+            "total_referrals": len(referral_ids),
+            "average_level": total_levels / len(referral_ids) if referral_ids else 0
+        }
 

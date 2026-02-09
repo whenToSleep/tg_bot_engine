@@ -25,12 +25,15 @@ Example:
     >>> print(result.rarity, result.card["id"])
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, TYPE_CHECKING
 from dataclasses import dataclass
 from enum import Enum
 import random
 from engine.core.utils import gacha_pull
 from engine.core.unique_entity import create_unique_entity
+
+if TYPE_CHECKING:
+    from engine.services.banner_manager import BannerManager
 
 
 class RarityTier(Enum):
@@ -113,13 +116,19 @@ class GachaService:
         "SS": 0.5
     }
     
-    def __init__(self, config: Optional[PityConfig] = None):
+    def __init__(
+        self,
+        config: Optional[PityConfig] = None,
+        banner_manager: Optional["BannerManager"] = None
+    ):
         """Initialize gacha service.
         
         Args:
             config: Pity configuration (uses defaults if not provided)
+            banner_manager: Optional BannerManager for dynamic pools
         """
         self.config = config or PityConfig()
+        self._banner_manager = banner_manager
     
     def _calculate_adjusted_weights(
         self,
@@ -343,6 +352,129 @@ class GachaService:
                 self.DEFAULT_WEIGHTS, pity_counter
             ).get("S", 1.5)
         }
+    
+    def set_banner_manager(self, banner_manager: "BannerManager") -> None:
+        """Set the banner manager for dynamic pool support.
+        
+        Args:
+            banner_manager: BannerManager instance
+            
+        Example:
+            >>> from engine.services.banner_manager import get_banner_manager
+            >>> service.set_banner_manager(get_banner_manager())
+        """
+        self._banner_manager = banner_manager
+    
+    def get_active_pool(self) -> Optional[List[Dict[str, Any]]]:
+        """Get the currently active banner's card pool.
+        
+        Returns:
+            List of card templates or None if no active banner
+            
+        Example:
+            >>> pool = service.get_active_pool()
+            >>> if pool:
+            ...     result = service.single_pull(player, pool)
+        """
+        if not self._banner_manager:
+            return None
+        
+        banner_info = self._banner_manager.get_active_banner()
+        if not banner_info:
+            return None
+        
+        # Get full banner state to access card pool
+        banner_id = banner_info["banner_id"]
+        banner_state = self._banner_manager._banners.get(banner_id)
+        if not banner_state:
+            return None
+        
+        return banner_state.config.card_pool
+    
+    def get_active_weights(self) -> Optional[Dict[str, float]]:
+        """Get custom weights from active banner, or defaults.
+        
+        Returns:
+            Rarity weights dict or None
+        """
+        if not self._banner_manager:
+            return self.DEFAULT_WEIGHTS.copy()
+        
+        banner_info = self._banner_manager.get_active_banner()
+        if not banner_info or not banner_info.get("custom_weights"):
+            return self.DEFAULT_WEIGHTS.copy()
+        
+        return banner_info["custom_weights"]
+    
+    def pull_from_active_banner(
+        self,
+        player: Dict[str, Any],
+        owner_id: Optional[str] = None,
+        multi: bool = False
+    ) -> Optional[GachaResult] | Optional[List[GachaResult]]:
+        """Pull from currently active banner.
+        
+        Automatically uses the active banner's card pool and weights.
+        Tracks pull statistics in the banner manager.
+        
+        Args:
+            player: Player entity
+            owner_id: Optional owner ID
+            multi: If True, performs 10-pull
+            
+        Returns:
+            GachaResult or List[GachaResult] (if multi), or None if no active banner
+            
+        Example:
+            >>> from engine.services.banner_manager import get_banner_manager
+            >>> 
+            >>> # Setup
+            >>> manager = get_banner_manager()
+            >>> service = GachaService()
+            >>> service.set_banner_manager(manager)
+            >>> 
+            >>> # Create and activate banner
+            >>> manager.create_banner("standard", "Standard", "Default banner", all_cards)
+            >>> manager.activate_banner("standard")
+            >>> 
+            >>> # Pull from active banner
+            >>> result = service.pull_from_active_banner(player)
+            >>> if result:
+            ...     print(f"Pulled: {result.card['name']}")
+        """
+        if not self._banner_manager:
+            raise RuntimeError("BannerManager not set. Call set_banner_manager() first.")
+        
+        banner_info = self._banner_manager.get_active_banner()
+        if not banner_info:
+            return None
+        
+        # Get pool and weights
+        pool = self.get_active_pool()
+        weights = self.get_active_weights()
+        
+        if not pool:
+            return None
+        
+        # Perform pull
+        if multi:
+            results = self.multi_pull(player, pool, owner_id, weights)
+            # Track statistics
+            self._banner_manager.track_pull(
+                banner_info["banner_id"],
+                owner_id or player.get("_id", "unknown"),
+                pull_count=len(results)
+            )
+            return results
+        else:
+            result = self.single_pull(player, pool, owner_id, weights)
+            # Track statistics
+            self._banner_manager.track_pull(
+                banner_info["banner_id"],
+                owner_id or player.get("_id", "unknown"),
+                pull_count=1
+            )
+            return result
 
 
 def create_gacha_service(config: Optional[Dict[str, Any]] = None) -> GachaService:

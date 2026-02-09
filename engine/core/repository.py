@@ -90,4 +90,104 @@ class EntityRepository(ABC):
             This operation is destructive and cannot be undone.
         """
         pass
+    
+    # Referral System Methods (v0.6.0+)
+    
+    @abstractmethod
+    def get_referral_tree(
+        self,
+        player_id: str,
+        depth: int = 1,
+        include_stats: bool = False
+    ) -> Dict[str, Any]:
+        """Get referral tree for a player.
+        
+        Retrieves the referral network starting from a player,
+        going down N levels deep. Useful for calculating referral bonuses.
+        
+        Args:
+            player_id: Root player ID
+            depth: How many levels deep to traverse (1 = direct referrals only)
+            include_stats: Whether to include aggregated stats
+            
+        Returns:
+            Dictionary with referral tree structure:
+            {
+                "player_id": str,
+                "direct_referrals": List[str],  # Direct referrals
+                "total_referrals": int,  # Total across all levels
+                "referral_tree": {
+                    "level_1": List[str],  # Direct referrals
+                    "level_2": List[str],  # Referrals of referrals
+                    ...
+                },
+                "stats": {  # If include_stats=True
+                    "total_spending": int,
+                    "active_referrals": int,
+                    ...
+                }
+            }
+            
+        Example:
+            >>> tree = repo.get_referral_tree("player_1", depth=2)
+            >>> print(f"Direct referrals: {tree['direct_referrals']}")
+            >>> print(f"Total referrals: {tree['total_referrals']}")
+        """
+        pass
+    
+    @abstractmethod
+    def add_referral(
+        self,
+        referrer_id: str,
+        referred_id: str
+    ) -> bool:
+        """Create a referral link between two players.
+        
+        Args:
+            referrer_id: Player who referred
+            referred_id: Player who was referred
+            
+        Returns:
+            True if link created, False if already exists
+            
+        Raises:
+            ValueError: If either player doesn't exist
+            
+        Example:
+            >>> repo.add_referral("player_veteran", "player_newbie")
+            True
+        """
+        pass
+    
+    @abstractmethod
+    def get_referrer(self, player_id: str) -> Optional[str]:
+        """Get the player who referred this player.
+        
+        Args:
+            player_id: Player to query
+            
+        Returns:
+            Referrer's player ID or None
+            
+        Example:
+            >>> referrer = repo.get_referrer("player_newbie")
+            >>> print(f"Referred by: {referrer}")
+        """
+        pass
+    
+    @abstractmethod
+    def get_direct_referrals(self, player_id: str) -> List[str]:
+        """Get list of players directly referred by this player.
+        
+        Args:
+            player_id: Player to query
+            
+        Returns:
+            List of referred player IDs
+            
+        Example:
+            >>> referrals = repo.get_direct_referrals("player_veteran")
+            >>> print(f"Has {len(referrals)} direct referrals")
+        """
+        pass
 

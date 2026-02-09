@@ -4,10 +4,10 @@ This package provides a production-ready framework for creating
 multiplayer turn-based games in Telegram with ACID guarantees,
 transaction support, and data-driven development.
 
-Version: 0.5.6 (Iteration 5.6 - Engine Refinement & Templates)
+Version: 0.6.0 (Iteration 6.1 - Scheduler & Dynamic Banners)
 """
 
-__version__ = "0.5.6"
+__version__ = "0.6.0"
 __author__ = "TG Bot Engine Team"
 __license__ = "MIT"
 
@@ -18,6 +18,7 @@ from engine.core.executor import CommandExecutor
 from engine.core.transaction import Transaction, TransactionalExecutor
 from engine.core.locks import EntityLockManager
 from engine.core.async_executor import AsyncCommandExecutor
+from engine.core.saga import Saga, SagaBuilder, SagaStep, SagaStatus
 from engine.core.data_loader import (
     DataLoader,
     get_global_loader,
@@ -38,6 +39,9 @@ from engine.core.events import (
     AchievementUnlockedEvent,
     ItemSpawnedEvent,
     MobSpawnedEvent,
+    BannerActivatedEvent,
+    BannerExpiredEvent,
+    GachaPullEvent,
 )
 
 # Utilities
@@ -68,6 +72,15 @@ from engine.core.bonuses import (
     calculate_bonus_summary,
     load_bonuses_from_entity,
     save_bonuses_to_entity,
+)
+
+# Group Bonus Calculator (Synergies)
+from engine.core.group_bonuses import (
+    GroupBonusCalculator,
+    SynergyRule,
+    create_element_synergy_rule,
+    create_rarity_synergy_rule,
+    analyze_deck_composition,
 )
 
 # Entity Status System
@@ -120,6 +133,21 @@ try:
         MatchmakingService,
         MatchResult,
         RankingSystem,
+        SchedulerService,
+        ScheduledTask,
+        get_scheduler,
+        reset_scheduler,
+        BannerManager,
+        BannerConfig,
+        BannerStatus,
+        get_banner_manager,
+        reset_banner_manager,
+        RaidService,
+        RaidEntity,
+        RaidStatus,
+        AttackResult,
+        get_raid_service,
+        reset_raid_service,
     )
     _SERVICES_AVAILABLE = True
 except ImportError:
@@ -153,6 +181,10 @@ __all__ = [
     "TransactionalExecutor",
     "EntityLockManager",
     "AsyncCommandExecutor",
+    "Saga",
+    "SagaBuilder",
+    "SagaStep",
+    "SagaStatus",
     # Persistence
     "EntityRepository",
     "PersistentGameState",
@@ -176,6 +208,9 @@ __all__ = [
     "AchievementUnlockedEvent",
     "ItemSpawnedEvent",
     "MobSpawnedEvent",
+    "BannerActivatedEvent",
+    "BannerExpiredEvent",
+    "GachaPullEvent",
     # Utilities
     "weighted_choice",
     "roll_loot_table",
@@ -197,6 +232,12 @@ __all__ = [
     "calculate_bonus_summary",
     "load_bonuses_from_entity",
     "save_bonuses_to_entity",
+    # Group Bonus Calculator
+    "GroupBonusCalculator",
+    "SynergyRule",
+    "create_element_synergy_rule",
+    "create_rarity_synergy_rule",
+    "analyze_deck_composition",
     # Entity Status
     "EntityStatus",
     "set_status",
@@ -239,6 +280,21 @@ if _SERVICES_AVAILABLE:
         "MatchmakingService",
         "MatchResult",
         "RankingSystem",
+        "SchedulerService",
+        "ScheduledTask",
+        "get_scheduler",
+        "reset_scheduler",
+        "BannerManager",
+        "BannerConfig",
+        "BannerStatus",
+        "get_banner_manager",
+        "reset_banner_manager",
+        "RaidService",
+        "RaidEntity",
+        "RaidStatus",
+        "AttackResult",
+        "get_raid_service",
+        "reset_raid_service",
     ])
 
 # Add Telegram adapter to __all__ if available

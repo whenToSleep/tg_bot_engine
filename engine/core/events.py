@@ -210,6 +210,98 @@ class MobSpawnedEvent(Event):
         )
 
 
+@dataclass
+class BannerActivatedEvent(Event):
+    """Event fired when a gacha banner is activated.
+    
+    Example:
+        >>> event = BannerActivatedEvent(
+        ...     banner_id="fire_rateup",
+        ...     banner_name="Fire Festival",
+        ...     duration_seconds=7200
+        ... )
+    """
+    def __init__(
+        self,
+        banner_id: str,
+        banner_name: str,
+        duration_seconds: Optional[float] = None,
+        **kwargs
+    ):
+        super().__init__(
+            event_type="banner_activated",
+            data={
+                "banner_id": banner_id,
+                "banner_name": banner_name,
+                "duration_seconds": duration_seconds,
+                **kwargs
+            }
+        )
+
+
+@dataclass
+class BannerExpiredEvent(Event):
+    """Event fired when a gacha banner expires.
+    
+    Example:
+        >>> event = BannerExpiredEvent(
+        ...     banner_id="fire_rateup",
+        ...     total_pulls=12500
+        ... )
+    """
+    def __init__(
+        self,
+        banner_id: str,
+        total_pulls: int = 0,
+        **kwargs
+    ):
+        super().__init__(
+            event_type="banner_expired",
+            data={
+                "banner_id": banner_id,
+                "total_pulls": total_pulls,
+                **kwargs
+            }
+        )
+
+
+@dataclass
+class GachaPullEvent(Event):
+    """Event fired when a player performs a gacha pull.
+    
+    Example:
+        >>> event = GachaPullEvent(
+        ...     player_id="player_1",
+        ...     banner_id="standard",
+        ...     cards_pulled=["card_u_abc123"],
+        ...     rarities=["S"],
+        ...     was_multi=False
+        ... )
+    """
+    def __init__(
+        self,
+        player_id: str,
+        banner_id: str,
+        cards_pulled: List[str],
+        rarities: List[str],
+        was_multi: bool = False,
+        was_pity: bool = False,
+        **kwargs
+    ):
+        super().__init__(
+            event_type="gacha_pull",
+            data={
+                "player_id": player_id,
+                "banner_id": banner_id,
+                "cards_pulled": cards_pulled,
+                "rarities": rarities,
+                "was_multi": was_multi,
+                "was_pity": was_pity,
+                **kwargs
+            }
+        )
+
+
 class EventBus:
     """Event bus for pub/sub messaging.
     

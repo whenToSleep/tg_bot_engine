@@ -1506,9 +1506,150 @@ async def send_card_image(message: Message, card_id: str):
 
 ---
 
+## Raid Service (World Bosses) ⭐ NEW v0.6.0
+
+Система глобальных боссов для кооперативных рейдов.
+
+### RaidService
+
+```python
+from engine.services import RaidService, get_raid_service
+
+# Инициализация
+service = get_raid_service(state)
+
+# Создать мировой рейд
+raid_id = service.create_raid(
+    raid_id="ancient_dragon",
+    name="Ancient Dragon Lord",
+    description="A legendary dragon threatens the realm",
+    max_hp=1_000_000_000,  # 1 миллиард HP!
+    duration_hours=48,
+    reward_pool={"gems": 10000, "gold": 1000000}
+)
+
+# Активировать рейд
+service.activate_raid(raid_id)
+
+# Игрок атакует (async)
+result = await service.attack_raid(
+    raid_id="ancient_dragon",
+    player_id="player_123",
+    damage=25000
+)
+
+if result.success:
+    print(f"Урон: {result.damage_dealt}")
+    print(f"HP босса: {result.current_hp}/{result.max_hp}")
+    print(f"Ваш ранг: {result.rank}")
+    
+    if result.raid_defeated:
+        print("Босс повержен!")
+
+# Получить статус рейда
+status = service.get_raid_status("ancient_dragon")
+print(f"Прогресс: {status['progress_percentage']:.1f}%")
+print(f"Участников: {status['participant_count']}")
+
+# Таблица лидеров
+leaderboard = service.get_leaderboard("ancient_dragon", limit=10)
+for entry in leaderboard:
+    print(f"{entry['rank']}. {entry['player_id']}: {entry['total_damage']:,} урона")
+```
+
+**Особенности:**
+- ✅ Оптимистичные блокировки (optimistic locking)
+- ✅ Автоматический retry при конфликтах
+- ✅ Поддержка миллиардов HP
+- ✅ Отслеживание вклада каждого игрока
+- ✅ Таблицы лидеров
+- ✅ Ограничение по времени
+
+**Concurrent Performance:**
+- Обрабатывает 500+ одновременных атак
+- Автоматический retry (до 5 попыток)
+- Версионирование для предотвращения гонок
+
+---
+
+## Referral System (Реферальная система) ⭐ NEW v0.6.0
+
+Система рефералов с деревом связей.
+
+### EntityRepository Methods
+
+```python
+from engine import SQLiteRepository
+
+repo = SQLiteRepository("game.db")
+
+# Создать реферальную связь
+repo.add_referral(
+    referrer_id="veteran_player",
+    referred_id="new_player"
+)
+
+# Получить дерево рефералов
+tree = repo.get_referral_tree(
+    player_id="veteran_player",
+    depth=2,  # 2 уровня вглубь
+    include_stats=True
+)
+
+print(f"Прямых рефералов: {len(tree['direct_referrals'])}")
+print(f"Всего рефералов: {tree['total_referrals']}")
+print(f"Уровень 1: {tree['referral_tree']['level_1']}")
+print(f"Уровень 2: {tree['referral_tree']['level_2']}")
+
+# Статистика
+if tree.get('stats'):
+    print(f"Общая трата: {tree['stats']['total_spending']}")
+    print(f"Активных: {tree['stats']['active_referrals']}")
+
+# Получить реферера игрока
+referrer = repo.get_referrer("new_player")
+print(f"Пригласил: {referrer}")
+
+# Получить прямых рефералов
+referrals = repo.get_direct_referrals("veteran_player")
+print(f"Рефералов: {len(referrals)}")
+```
+
+**Структура данных игрока:**
+```python
+player = {
+    "_type": "player",
+    "_id": "player_123",
+    "referrer_id": "veteran_player",  # Кто пригласил
+    "referrals": ["newbie_1", "newbie_2"],  # Кого пригласил
+    # ... другие поля
+}
+```
+
+**Использование для бонусов:**
+```python
+from engine.core.bonuses import BonusCalculator
+
+# Получить дерево рефералов
+tree = repo.get_referral_tree("player_id", depth=2, include_stats=True)
+
+# Добавить бонусы за рефералов
+calc = BonusCalculator()
+
+# Бонус за каждого прямого реферала
+direct_count = len(tree['direct_referrals'])
+calc.add_bonus("gold_production", "percent", direct_count * 5, "referral_bonus")
+
+# Бонус за активных рефералов
+active_count = tree['stats']['active_referrals']
+calc.add_bonus("exp_gain", "percent", active_count * 2, "active_referral_bonus")
+```
+
+---
+
 ## Версии и совместимость
 
-**Текущая версия:** 0.5.6
+**Текущая версия:** 0.6.0
 
 **Python:** 3.9+
 

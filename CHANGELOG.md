@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - RPG Template with combat, inventory, quests, and location systems
   - Idle Clicker Template with building and upgrade mechanics
   - Card Game Template with deck building and card battles
-- **TEMPLATES_GUIDE.md** - Comprehensive guide for using and customizing templates
+- **templates/** - Готовые шаблоны игр с полной документацией
 - Templates include complete structure:
   - JSON schemas for data validation
   - Example content files (mobs, items, cards, etc.)

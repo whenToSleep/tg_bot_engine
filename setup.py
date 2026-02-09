@@ -9,7 +9,7 @@ long_description = readme_path.read_text(encoding="utf-8") if readme_path.exists
 
 setup(
     name="tg-bot-engine",
-    version="0.5.6",
+    version="0.6.0",
     description="Production-ready game engine for Telegram bots with command-based architecture, ACID transactions, and event-driven modules",
     long_description=long_description,
     long_description_content_type="text/markdown",
