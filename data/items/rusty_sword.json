@@ -1,0 +1,14 @@
+{
+  "id": "rusty_sword",
+  "name": "Rusty Sword",
+  "description": "An old rusty sword",
+  "type": "weapon",
+  "rarity": "common",
+  "stackable": false,
+  "price": 50,
+  "stats": {
+    "attack": 5
+  },
+  "equipment_slot": "weapon"
+}
+

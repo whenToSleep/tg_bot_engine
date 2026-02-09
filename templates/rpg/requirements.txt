@@ -1,0 +1,14 @@
+# RPG Bot Requirements
+# Install with: pip install -r requirements.txt
+
+# Core engine (install from parent project or PyPI when published)
+# For now, install in development mode from parent directory:
+# cd ../.. && pip install -e .
+
+# Required dependencies
+python-dotenv>=1.0.0
+aiogram>=3.0.0
+
+# Optional: For enhanced logging
+colorlog>=6.7.0
+

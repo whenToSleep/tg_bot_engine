@@ -1,0 +1,10 @@
+# Card Game Bot Requirements
+# Install with: pip install -r requirements.txt
+
+# Core engine (install from parent project)
+# cd ../.. && pip install -e .
+
+# Required dependencies
+python-dotenv>=1.0.0
+aiogram>=3.0.0
+

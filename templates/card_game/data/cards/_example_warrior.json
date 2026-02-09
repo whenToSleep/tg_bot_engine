@@ -1,0 +1,14 @@
+{
+  "id": "forest_warrior",
+  "name": "Forest Warrior",
+  "description": "A brave warrior from the forest",
+  "cost": 3,
+  "type": "minion",
+  "rarity": "common",
+  "attack": 3,
+  "health": 4,
+  "keywords": [],
+  "tribe": "beast",
+  "collectible": true
+}
+

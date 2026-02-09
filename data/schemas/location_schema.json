@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique location identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Location name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Location description"
+    },
+    "level_requirement": {
+      "type": "integer",
+      "description": "Minimum level to enter",
+      "minimum": 1,
+      "default": 1
+    },
+    "mob_spawns": {
+      "type": "array",
+      "description": "Mobs that can spawn here",
+      "items": {
+        "type": "object",
+        "required": ["mob_id", "chance"],
+        "properties": {
+          "mob_id": {
+            "type": "string",
+            "description": "Mob template id"
+          },
+          "chance": {
+            "type": "number",
+            "description": "Spawn chance (0.0 - 1.0)",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "min_level": {
+            "type": "integer",
+            "description": "Minimum mob level",
+            "minimum": 1,
+            "default": 1
+          },
+          "max_level": {
+            "type": "integer",
+            "description": "Maximum mob level",
+            "minimum": 1,
+            "default": 1
+          }
+        }
+      },
+      "default": []
+    },
+    "connections": {
+      "type": "array",
+      "description": "Connected locations",
+      "items": {
+        "type": "object",
+        "required": ["location_id"],
+        "properties": {
+          "location_id": {
+            "type": "string",
+            "description": "Connected location id"
+          },
+          "direction": {
+            "type": "string",
+            "description": "Direction label (north, south, etc.)"
+          },
+          "travel_cost": {
+            "type": "integer",
+            "description": "Gold cost to travel",
+            "minimum": 0,
+            "default": 0
+          },
+          "requires_item": {
+            "type": "string",
+            "description": "Item required to travel (optional)"
+          }
+        }
+      },
+      "default": []
+    },
+    "npcs": {
+      "type": "array",
+      "description": "NPCs in this location",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "tags": {
+      "type": "array",
+      "description": "Location tags (e.g., 'safe', 'dungeon', 'town')",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  }
+}
+

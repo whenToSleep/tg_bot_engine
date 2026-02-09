@@ -1,0 +1,14 @@
+{
+  "id": "farm",
+  "name": "Farm",
+  "description": "Grows crops automatically",
+  "base_cost": 10,
+  "cost_multiplier": 1.15,
+  "production_rate": 0.5,
+  "production_multiplier": 1.07,
+  "unlock_cost": 0,
+  "max_level": 0,
+  "category": "production",
+  "icon": "🌾"
+}
+

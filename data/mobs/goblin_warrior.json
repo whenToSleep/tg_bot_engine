@@ -1,0 +1,15 @@
+{
+  "id": "goblin_warrior",
+  "name": "Goblin Warrior",
+  "description": "A nasty little goblin",
+  "hp": 50,
+  "attack": 8,
+  "defense": 2,
+  "gold_reward": 25,
+  "experience_reward": 15,
+  "level": 1,
+  "abilities": [],
+  "loot_table": [],
+  "tags": ["goblin"]
+}
+

@@ -1,0 +1,14 @@
+{
+  "id": "iron_sword",
+  "name": "Iron Sword",
+  "description": "A reliable iron sword",
+  "type": "weapon",
+  "rarity": "common",
+  "stackable": false,
+  "price": 100,
+  "stats": {
+    "attack": 10
+  },
+  "equipment_slot": "weapon"
+}
+

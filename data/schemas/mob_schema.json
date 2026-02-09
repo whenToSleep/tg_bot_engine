@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "hp", "attack"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique mob identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the mob",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Mob description for players"
+    },
+    "hp": {
+      "type": "integer",
+      "description": "Health points",
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "attack": {
+      "type": "integer",
+      "description": "Attack damage",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "defense": {
+      "type": "integer",
+      "description": "Defense value (damage reduction)",
+      "minimum": 0,
+      "maximum": 1000,
+      "default": 0
+    },
+    "gold_reward": {
+      "type": "integer",
+      "description": "Gold dropped on death",
+      "minimum": 0,
+      "maximum": 1000000,
+      "default": 0
+    },
+    "experience_reward": {
+      "type": "integer",
+      "description": "Experience points on death",
+      "minimum": 0,
+      "maximum": 1000000,
+      "default": 0
+    },
+    "level": {
+      "type": "integer",
+      "description": "Mob level",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 1
+    },
+    "abilities": {
+      "type": "array",
+      "description": "Special abilities",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Ability identifier"
+          },
+          "chance": {
+            "type": "number",
+            "description": "Probability to trigger (0.0 - 1.0)",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 1.0
+          },
+          "cooldown": {
+            "type": "integer",
+            "description": "Cooldown in turns",
+            "minimum": 0,
+            "default": 0
+          }
+        }
+      },
+      "default": []
+    },
+    "loot_table": {
+      "type": "array",
+      "description": "Items that can drop",
+      "items": {
+        "type": "object",
+        "required": ["item_id", "chance"],
+        "properties": {
+          "item_id": {
+            "type": "string"
+          },
+          "chance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "min_quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "max_quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          }
+        }
+      },
+      "default": []
+    },
+    "tags": {
+      "type": "array",
+      "description": "Classification tags (e.g., 'undead', 'boss', 'elite')",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  }
+}
+

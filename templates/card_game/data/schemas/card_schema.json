@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "cost", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique card identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Card name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Card description"
+    },
+    "cost": {
+      "type": "integer",
+      "description": "Mana cost to play",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "type": {
+      "type": "string",
+      "description": "Card type",
+      "enum": ["minion", "spell", "weapon", "enchantment"]
+    },
+    "rarity": {
+      "type": "string",
+      "description": "Card rarity",
+      "enum": ["common", "rare", "epic", "legendary"],
+      "default": "common"
+    },
+    "attack": {
+      "type": "integer",
+      "description": "Attack value (for minions/weapons)",
+      "minimum": 0
+    },
+    "health": {
+      "type": "integer",
+      "description": "Health value (for minions)",
+      "minimum": 1
+    },
+    "durability": {
+      "type": "integer",
+      "description": "Durability (for weapons)",
+      "minimum": 1
+    },
+    "effects": {
+      "type": "array",
+      "description": "Card effects",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Effect type",
+            "enum": ["damage", "heal", "draw", "summon", "buff", "debuff", "destroy"]
+          },
+          "target": {
+            "type": "string",
+            "description": "Effect target",
+            "enum": ["enemy", "ally", "self", "all", "random"]
+          },
+          "value": {
+            "type": "integer",
+            "description": "Effect value"
+          }
+        }
+      },
+      "default": []
+    },
+    "keywords": {
+      "type": "array",
+      "description": "Card keywords",
+      "items": {
+        "type": "string",
+        "enum": ["charge", "taunt", "divine_shield", "stealth", "lifesteal", "windfury"]
+      },
+      "default": []
+    },
+    "tribe": {
+      "type": "string",
+      "description": "Card tribe (for minions)",
+      "enum": ["beast", "dragon", "demon", "murloc", "pirate", "elemental", "mech", "undead"]
+    },
+    "collectible": {
+      "type": "boolean",
+      "description": "Can be collected in packs",
+      "default": true
+    }
+  }
+}
+

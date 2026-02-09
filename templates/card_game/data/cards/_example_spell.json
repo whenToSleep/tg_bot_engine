@@ -1,0 +1,17 @@
+{
+  "id": "fireball",
+  "name": "Fireball",
+  "description": "Deal 6 damage to a target",
+  "cost": 4,
+  "type": "spell",
+  "rarity": "common",
+  "effects": [
+    {
+      "type": "damage",
+      "target": "enemy",
+      "value": 6
+    }
+  ],
+  "collectible": true
+}
+

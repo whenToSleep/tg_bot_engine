@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "base_cost"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique building identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Building name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Building description"
+    },
+    "base_cost": {
+      "type": "integer",
+      "description": "Base cost to build (scales with level)",
+      "minimum": 1
+    },
+    "cost_multiplier": {
+      "type": "number",
+      "description": "Cost multiplier per level",
+      "minimum": 1,
+      "default": 1.15
+    },
+    "production_rate": {
+      "type": "number",
+      "description": "Resources produced per second",
+      "minimum": 0,
+      "default": 0
+    },
+    "production_multiplier": {
+      "type": "number",
+      "description": "Production multiplier per level",
+      "minimum": 1,
+      "default": 1.07
+    },
+    "unlock_cost": {
+      "type": "integer",
+      "description": "Cost to unlock this building",
+      "minimum": 0,
+      "default": 0
+    },
+    "max_level": {
+      "type": "integer",
+      "description": "Maximum building level (0 = unlimited)",
+      "minimum": 0,
+      "default": 0
+    },
+    "requires_building": {
+      "type": "string",
+      "description": "Required building to unlock (optional)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Building category",
+      "enum": ["production", "automation", "boost", "special"]
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji or icon for the building"
+    }
+  }
+}
+

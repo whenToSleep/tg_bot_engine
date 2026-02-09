@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "cost", "effect"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique upgrade identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Upgrade name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Upgrade description"
+    },
+    "cost": {
+      "type": "integer",
+      "description": "Cost to purchase upgrade",
+      "minimum": 1
+    },
+    "effect": {
+      "type": "object",
+      "description": "Upgrade effects",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Effect type",
+          "enum": ["multiply_production", "multiply_click", "unlock_building", "auto_click", "reduce_cost"]
+        },
+        "target": {
+          "type": "string",
+          "description": "Target building id (if applicable)"
+        },
+        "value": {
+          "type": "number",
+          "description": "Effect value (multiplier, amount, etc.)"
+        }
+      }
+    },
+    "requires_building_level": {
+      "type": "object",
+      "description": "Required building level to unlock",
+      "properties": {
+        "building_id": {
+          "type": "string"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "tier": {
+      "type": "integer",
+      "description": "Upgrade tier",
+      "minimum": 1,
+      "default": 1
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji or icon for the upgrade"
+    }
+  }
+}
+

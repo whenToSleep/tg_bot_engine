@@ -1,0 +1,25 @@
+{
+  "id": "health_potion_small",
+  "name": "Small Health Potion",
+  "description": "Restores 50 HP",
+  "type": "consumable",
+  "rarity": "common",
+  "level_requirement": 1,
+  "stackable": true,
+  "max_stack": 99,
+  "price": 25,
+  "consumable_data": {
+    "uses": 1,
+    "cooldown": 0
+  },
+  "effects": [
+    {
+      "effect_id": "heal",
+      "trigger": "on_use",
+      "duration": 0,
+      "power": 50
+    }
+  ],
+  "tags": ["potion", "healing"]
+}
+

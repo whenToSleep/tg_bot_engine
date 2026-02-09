@@ -1,0 +1,15 @@
+{
+  "id": "dragon_ancient",
+  "name": "Ancient Dragon",
+  "description": "A legendary ancient dragon",
+  "hp": 1000,
+  "attack": 100,
+  "defense": 50,
+  "gold_reward": 1000,
+  "experience_reward": 5000,
+  "level": 50,
+  "abilities": [],
+  "loot_table": [],
+  "tags": ["dragon", "legendary", "boss"]
+}
+

@@ -1,0 +1,15 @@
+# Production dependencies for Telegram Game Engine
+# Iteration 0: Minimal PoC requirements
+
+# Data validation and type hints
+pydantic>=2.5.0
+
+# Extended typing support
+typing-extensions>=4.8.0
+
+# Iteration 2: Data-Driven System
+jsonschema>=4.20.0
+
+# Iteration 5: Telegram Adapter
+aiogram>=3.3.0
+

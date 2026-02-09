@@ -1,0 +1,21 @@
+{
+  "id": "health_potion",
+  "name": "Health Potion",
+  "description": "Restores 50 HP",
+  "type": "consumable",
+  "rarity": "common",
+  "stackable": true,
+  "max_stack": 99,
+  "price": 25,
+  "consumable_data": {
+    "uses": 1
+  },
+  "effects": [
+    {
+      "effect_id": "heal",
+      "trigger": "on_use",
+      "power": 50
+    }
+  ]
+}
+

@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique item identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Item description"
+    },
+    "type": {
+      "type": "string",
+      "description": "Item category",
+      "enum": ["weapon", "armor", "consumable", "quest_item", "material", "misc"]
+    },
+    "rarity": {
+      "type": "string",
+      "description": "Item rarity",
+      "enum": ["common", "uncommon", "rare", "epic", "legendary"],
+      "default": "common"
+    },
+    "level_requirement": {
+      "type": "integer",
+      "description": "Minimum level to use",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 1
+    },
+    "stackable": {
+      "type": "boolean",
+      "description": "Can be stacked in inventory",
+      "default": false
+    },
+    "max_stack": {
+      "type": "integer",
+      "description": "Maximum stack size",
+      "minimum": 1,
+      "maximum": 999,
+      "default": 1
+    },
+    "price": {
+      "type": "integer",
+      "description": "Buy/sell price in gold",
+      "minimum": 0,
+      "default": 0
+    },
+    "stats": {
+      "type": "object",
+      "description": "Stat bonuses",
+      "properties": {
+        "hp": {
+          "type": "integer"
+        },
+        "attack": {
+          "type": "integer"
+        },
+        "defense": {
+          "type": "integer"
+        },
+        "speed": {
+          "type": "integer"
+        },
+        "crit_chance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "crit_damage": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true,
+      "default": {}
+    },
+    "effects": {
+      "type": "array",
+      "description": "Effects when used/equipped",
+      "items": {
+        "type": "object",
+        "required": ["effect_id"],
+        "properties": {
+          "effect_id": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string",
+            "enum": ["on_use", "on_equip", "on_hit", "passive"],
+            "default": "on_use"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Duration in turns (0 = instant)",
+            "minimum": 0,
+            "default": 0
+          },
+          "power": {
+            "type": "number",
+            "description": "Effect power/magnitude",
+            "default": 1.0
+          }
+        }
+      },
+      "default": []
+    },
+    "consumable_data": {
+      "type": "object",
+      "description": "Data for consumable items",
+      "properties": {
+        "uses": {
+          "type": "integer",
+          "description": "Number of uses before consumed",
+          "minimum": 1,
+          "default": 1
+        },
+        "cooldown": {
+          "type": "integer",
+          "description": "Cooldown in turns",
+          "minimum": 0,
+          "default": 0
+        }
+      }
+    },
+    "equipment_slot": {
+      "type": "string",
+      "description": "Equipment slot for weapons/armor",
+      "enum": ["weapon", "head", "chest", "legs", "feet", "hands", "accessory"]
+    },
+    "tags": {
+      "type": "array",
+      "description": "Item tags",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  }
+}
+

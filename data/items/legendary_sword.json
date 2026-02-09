@@ -1,0 +1,18 @@
+{
+  "id": "legendary_sword",
+  "name": "Legendary Sword",
+  "description": "A legendary blade of immense power",
+  "type": "weapon",
+  "rarity": "legendary",
+  "stackable": false,
+  "price": 10000,
+  "level_requirement": 20,
+  "stats": {
+    "attack": 100,
+    "crit_chance": 0.2,
+    "crit_damage": 2.0
+  },
+  "equipment_slot": "weapon",
+  "tags": ["legendary", "sword"]
+}
+

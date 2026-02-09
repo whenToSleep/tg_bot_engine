@@ -1,0 +1,11 @@
+{
+  "id": "gold_coin",
+  "name": "Gold Coin",
+  "description": "A shiny gold coin",
+  "type": "material",
+  "rarity": "common",
+  "stackable": true,
+  "max_stack": 999,
+  "price": 1
+}
+

@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "name", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique quest identifier",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Quest name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "description": "Quest description"
+    },
+    "type": {
+      "type": "string",
+      "description": "Quest type",
+      "enum": ["kill", "collect", "escort", "talk", "explore", "craft"]
+    },
+    "level_requirement": {
+      "type": "integer",
+      "description": "Minimum level to accept",
+      "minimum": 1,
+      "default": 1
+    },
+    "objectives": {
+      "type": "array",
+      "description": "Quest objectives",
+      "items": {
+        "type": "object",
+        "required": ["type", "target", "amount"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Objective type (kill, collect, etc.)"
+          },
+          "target": {
+            "type": "string",
+            "description": "Target entity id"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "Required amount",
+            "minimum": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "Objective description"
+          }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "description": "Quest rewards",
+      "properties": {
+        "gold": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "exp": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "items": {
+          "type": "array",
+          "description": "Item rewards",
+          "items": {
+            "type": "object",
+            "required": ["item_id", "quantity"],
+            "properties": {
+              "item_id": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 1
+              }
+            }
+          },
+          "default": []
+        }
+      }
+    },
+    "chain_next": {
+      "type": "string",
+      "description": "Next quest in chain (optional)"
+    },
+    "repeatable": {
+      "type": "boolean",
+      "description": "Can be repeated",
+      "default": false
+    },
+    "cooldown": {
+      "type": "integer",
+      "description": "Cooldown in seconds before can repeat",
+      "minimum": 0,
+      "default": 0
+    }
+  }
+}
+
