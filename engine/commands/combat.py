@@ -2,12 +2,15 @@
 
 This module provides commands for combat:
 - AttackMobCommand: Player attacks a mob
+
+Combat now supports stat modifiers (buffs/debuffs) via engine.core.modifiers.
 """
 
 from typing import Any
 from engine.core.command import Command
 from engine.core.state import GameState
 from engine.core.events import get_event_bus, MobKilledEvent, GoldChangedEvent
+from engine.core.modifiers import StatCalculator
 
 
 class AttackMobCommand(Command):
@@ -69,8 +72,9 @@ class AttackMobCommand(Command):
         if mob is None:
             raise KeyError(f"Mob {self.mob_id} does not exist")
         
-        # Calculate damage
-        damage = player.get("attack", 10)  # Default attack = 10
+        # Calculate damage with modifiers applied
+        player_stats = StatCalculator.get_all_stats(player)
+        damage = int(player_stats.get("attack", 10))
         
         # Deal damage to mob
         mob_hp = mob.get("hp", 100)

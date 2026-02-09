@@ -1,0 +1,30 @@
+{
+  "id": "ancient_dragon",
+  "proto_id": "ancient_dragon",
+  "name": "Ancient Dragon",
+  "rarity": "S",
+  "element": "fire",
+  "cost": 8,
+  "type": "minion",
+  "base_attack": 150,
+  "base_defense": 80,
+  "base_hp": 200,
+  "skills": [
+    {
+      "id": "flame_breath",
+      "name": "Flame Breath",
+      "description": "Deal 50 damage to all enemies",
+      "type": "active",
+      "cooldown": 3
+    },
+    {
+      "id": "dragon_scales",
+      "name": "Dragon Scales",
+      "description": "Reduce all incoming damage by 30%",
+      "type": "passive"
+    }
+  ],
+  "flavor_text": "Ancient guardian of the Fire Realm. Its roar shakes the heavens.",
+  "image": "cards/ancient_dragon.png"
+}
+

@@ -1,0 +1,16 @@
+{
+  "id": "goblin_grunt",
+  "proto_id": "goblin_grunt",
+  "name": "Goblin Grunt",
+  "rarity": "C",
+  "element": "fire",
+  "cost": 2,
+  "type": "minion",
+  "base_attack": 20,
+  "base_defense": 10,
+  "base_hp": 30,
+  "skills": [],
+  "flavor_text": "The weakest of the goblin clan. Useful only in numbers.",
+  "image": "cards/goblin_grunt.png"
+}
+

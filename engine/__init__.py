@@ -4,10 +4,10 @@ This package provides a production-ready framework for creating
 multiplayer turn-based games in Telegram with ACID guarantees,
 transaction support, and data-driven development.
 
-Version: 0.5.5 (Iteration 5.5 - Engine Packaging)
+Version: 0.5.6 (Iteration 5.6 - Engine Refinement & Templates)
 """
 
-__version__ = "0.5.5"
+__version__ = "0.5.6"
 __author__ = "TG Bot Engine Team"
 __license__ = "MIT"
 
@@ -40,6 +40,62 @@ from engine.core.events import (
     MobSpawnedEvent,
 )
 
+# Utilities
+from engine.core.utils import (
+    weighted_choice,
+    roll_loot_table,
+    gacha_pull,
+    calculate_offline_progress,
+    calculate_exponential_cost,
+    calculate_exponential_production,
+    merge_item_stacks,
+    filter_entities,
+)
+
+# Stat Modifiers (Buffs/Debuffs)
+from engine.core.modifiers import (
+    Modifier,
+    ModifierType,
+    StatCalculator,
+    add_modifier,
+    remove_modifiers_by_source,
+    has_modifier_from_source,
+)
+
+# Bonus Calculator (Idle Multipliers)
+from engine.core.bonuses import (
+    BonusCalculator,
+    calculate_bonus_summary,
+    load_bonuses_from_entity,
+    save_bonuses_to_entity,
+)
+
+# Entity Status System
+from engine.core.entity_status import (
+    EntityStatus,
+    set_status,
+    get_status,
+    has_status,
+    is_usable,
+    is_tradable,
+    get_entities_by_status,
+    filter_usable,
+    filter_tradable,
+    StatusValidator,
+)
+
+# Unique Entity System
+from engine.core.unique_entity import (
+    generate_unique_id,
+    create_unique_entity,
+    create_multiple_entities,
+    get_proto_id,
+    is_same_prototype,
+    group_by_prototype,
+    count_by_prototype,
+    UniqueEntityManager,
+)
+
 # Persistence
 from engine.core.repository import EntityRepository
 from engine.core.persistent_state import PersistentGameState
@@ -53,9 +109,32 @@ from engine.commands.economy import GainGoldCommand, SpendGoldCommand
 from engine.commands.combat import AttackMobCommand
 from engine.commands.spawning import SpawnMobCommand, SpawnItemCommand
 
+# Services (опционально)
+try:
+    from engine.services import (
+        GachaService,
+        PityConfig,
+        GachaResult,
+        RarityTier,
+        create_gacha_service,
+        MatchmakingService,
+        MatchResult,
+        RankingSystem,
+    )
+    _SERVICES_AVAILABLE = True
+except ImportError:
+    _SERVICES_AVAILABLE = False
+
 # Telegram Adapter (опционально)
 try:
-    from engine.adapters.telegram import GameBot, TelegramCommandAdapter, ResponseBuilder
+    from engine.adapters.telegram import (
+        GameBot,
+        TelegramCommandAdapter,
+        ResponseBuilder,
+        MediaLibrary,
+        get_media_library,
+        reset_media_library,
+    )
     _TELEGRAM_AVAILABLE = True
 except ImportError:
     _TELEGRAM_AVAILABLE = False
@@ -97,6 +176,47 @@ __all__ = [
     "AchievementUnlockedEvent",
     "ItemSpawnedEvent",
     "MobSpawnedEvent",
+    # Utilities
+    "weighted_choice",
+    "roll_loot_table",
+    "gacha_pull",
+    "calculate_offline_progress",
+    "calculate_exponential_cost",
+    "calculate_exponential_production",
+    "merge_item_stacks",
+    "filter_entities",
+    # Stat Modifiers
+    "Modifier",
+    "ModifierType",
+    "StatCalculator",
+    "add_modifier",
+    "remove_modifiers_by_source",
+    "has_modifier_from_source",
+    # Bonus Calculator
+    "BonusCalculator",
+    "calculate_bonus_summary",
+    "load_bonuses_from_entity",
+    "save_bonuses_to_entity",
+    # Entity Status
+    "EntityStatus",
+    "set_status",
+    "get_status",
+    "has_status",
+    "is_usable",
+    "is_tradable",
+    "get_entities_by_status",
+    "filter_usable",
+    "filter_tradable",
+    "StatusValidator",
+    # Unique Entity
+    "generate_unique_id",
+    "create_unique_entity",
+    "create_multiple_entities",
+    "get_proto_id",
+    "is_same_prototype",
+    "group_by_prototype",
+    "count_by_prototype",
+    "UniqueEntityManager",
     # Modules
     "AchievementModule",
     "ProgressionModule",
@@ -108,7 +228,27 @@ __all__ = [
     "SpawnItemCommand",
 ]
 
+# Add Services to __all__ if available
+if _SERVICES_AVAILABLE:
+    __all__.extend([
+        "GachaService",
+        "PityConfig",
+        "GachaResult",
+        "RarityTier",
+        "create_gacha_service",
+        "MatchmakingService",
+        "MatchResult",
+        "RankingSystem",
+    ])
+
 # Add Telegram adapter to __all__ if available
 if _TELEGRAM_AVAILABLE:
-    __all__.extend(["GameBot", "TelegramCommandAdapter", "ResponseBuilder"])
+    __all__.extend([
+        "GameBot",
+        "TelegramCommandAdapter",
+        "ResponseBuilder",
+        "MediaLibrary",
+        "get_media_library",
+        "reset_media_library",
+    ])
 

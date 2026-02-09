@@ -8,10 +8,14 @@ and building appropriate responses.
 from .command_adapter import TelegramCommandAdapter
 from .response_builder import ResponseBuilder
 from .bot import GameBot
+from .media_library import MediaLibrary, get_media_library, reset_media_library
 
 __all__ = [
     'TelegramCommandAdapter',
     'ResponseBuilder',
     'GameBot',
+    'MediaLibrary',
+    'get_media_library',
+    'reset_media_library',
 ]
 

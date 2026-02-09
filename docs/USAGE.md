@@ -95,6 +95,14 @@ players = state.get_entities_by_type("player")
 
 # Подсчитать сущности
 count = state.entity_count()
+
+# Bulk loading (v0.5.6+) - для коллекций
+deck_ids = ["card_1", "card_2", "card_3", "card_4", ...]  # 30+ карт
+cards = state.get_entities_bulk(deck_ids)
+# Загружает все карты ОДНИМ SQL запросом (~25x быстрее!)
+
+for card_id, card in cards.items():
+    print(f"{card['name']}: {card['attack']}")
 ```
 
 ### 2. PersistentGameState - Персистентное состояние
@@ -437,6 +445,170 @@ async def test_full_flow():
     assert result.success
     assert result.data["new_gold"] == 100
 ```
+
+## 🆕 Новые возможности (v0.5.6+)
+
+### Bulk Loading для коллекций
+
+Оптимизированная загрузка множества сущностей (~25x быстрее):
+
+```python
+from engine import PersistentGameState, SQLiteRepository
+
+repo = SQLiteRepository("game.db")
+state = PersistentGameState(repo)
+
+# Загрузить колоду игрока (30+ карт) одним запросом
+player = state.get_entity("player_123")
+deck_ids = player.get("deck_card_ids", [])
+
+# ❌ Медленно: 30 отдельных SQL запросов
+# cards = [state.get_entity(card_id) for card_id in deck_ids]
+
+# ✅ Быстро: 1 SQL запрос
+cards = state.get_entities_bulk(deck_ids)
+
+for card_id, card in cards.items():
+    print(f"{card['name']}: Attack {card['attack']}")
+```
+
+### Media Albums для Telegram
+
+Красивое отображение gacha/lootbox результатов:
+
+```python
+from engine.adapters.telegram import ResponseBuilder, get_media_library
+
+builder = ResponseBuilder()
+
+# Создать альбом из карт (вместо 10 отдельных сообщений)
+album = builder.build_media_album(
+    cards,
+    media_library=get_media_library(),
+    caption_formatter=lambda c, i: f"{c['rarity']} - {c['name']}"
+)
+
+# Отправить альбом
+await message.answer_media_group(album)
+
+# + текстовая сводка
+summary = builder.build_gacha_result_text(cards)
+await message.answer(summary)
+# 🎰 Результаты гачи (10 круток)
+# ⚪ C: 7 шт.
+# 🔵 B: 2 шт.
+# 🟣 A: 1 шт.
+```
+
+### Gacha Service с Pity System
+
+Полноценная gacha механика для CCG игр:
+
+```python
+from engine.services import GachaService, PityConfig
+
+# Настроить pity систему
+config = PityConfig(
+    soft_pity_start=70,      # Мягкая гарантия с 70-й крутки
+    hard_pity=90,            # Жёсткая гарантия на 90-й
+    multi_guarantee_rarity="A"  # Гарантия A-ранга в 10-крутке
+)
+
+service = GachaService(config)
+
+# Одиночная крутка
+player = state.get_entity("player_123")
+card_pool = get_data_loader().get_all("card")
+
+result = service.single_pull(player, card_pool, owner_id="player_123")
+print(f"Pulled: {result.card['name']} ({result.rarity})")
+print(f"Was pity: {result.was_pity}")
+
+# Обновить счётчик
+player["pity_counter"] = result.new_pity_counter
+state.set_entity("player_123", player)
+
+# 10-крутка (гарантия A-ранга)
+results = service.multi_pull(player, card_pool, owner_id="player_123")
+```
+
+### Matchmaking Service для PvP
+
+ELO-based рейтинг и подбор оппонентов:
+
+```python
+from engine.services import MatchmakingService
+
+service = MatchmakingService(max_rating_diff=200)
+
+# Инициализировать рейтинг нового игрока
+service.ranking.initialize_player_rating(player)
+# player теперь имеет: rating=1200, rank_tier="Silver", wins=0, losses=0
+
+# Найти оппонента
+all_players = state.get_entities_by_type("player")
+opponent = service.find_opponent(player, all_players)
+
+# После боя обновить рейтинги
+match_result = service.update_ratings_after_match(winner, loser)
+print(f"Rating change: {match_result.winner_rating_change:+d}")
+print(f"New tier: {winner['rank_tier']}")
+```
+
+### Entity Status для сложных механик
+
+Управление статусами для торговли/аукциона:
+
+```python
+from engine import EntityStatus, set_status, is_usable, is_tradable
+
+# Выставить карту на аукцион
+card = state.get_entity("card_123")
+set_status(card, EntityStatus.ON_AUCTION)
+
+# Проверки
+if is_usable(card):
+    print("Можно использовать в бою")  # False - на аукционе
+
+if is_tradable(card):
+    print("Можно торговать")  # False - уже на аукционе
+```
+
+### Unique Entity для CCG
+
+Уникальные экземпляры карт:
+
+```python
+from engine import create_unique_entity, group_by_prototype
+
+# Создать уникальную карту из прототипа
+dragon_proto = get_data_loader().get("card", "ancient_dragon")
+
+card = create_unique_entity(
+    dragon_proto,
+    "card",
+    owner_id="player_123",
+    custom_fields={"level": 1, "exp": 0}
+)
+
+# card["_id"] = "card_a1b2c3d4"  (уникальный)
+# card["proto_id"] = "ancient_dragon"  (ссылка на прототип)
+
+# Группировка коллекции
+player_cards = state.get_entities_by_filter(
+    lambda e: e.get("_type") == "card" and e.get("owner_id") == "player_123"
+)
+
+grouped = group_by_prototype(player_cards)
+# {"ancient_dragon": [card1, card2], "goblin": [card3, card4, card5]}
+```
+
+**Подробнее:**
+- [TEMPLATES_GUIDE.md](TEMPLATES_GUIDE.md) - Паттерны и примеры
+- [API_REFERENCE.md](API_REFERENCE.md) - Полная документация API
+- [Aether Bonds Guide](../templates/card_game/AETHER_BONDS_GUIDE.md) - CCG игры
+
+---
 
 ## 📚 Дополнительные ресурсы
 

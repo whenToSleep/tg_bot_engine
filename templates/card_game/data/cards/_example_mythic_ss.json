@@ -1,0 +1,36 @@
+{
+  "id": "aether_phoenix",
+  "proto_id": "aether_phoenix",
+  "name": "Aether Phoenix",
+  "rarity": "SS",
+  "element": "aether",
+  "cost": 10,
+  "type": "minion",
+  "base_attack": 200,
+  "base_defense": 100,
+  "base_hp": 300,
+  "skills": [
+    {
+      "id": "rebirth",
+      "name": "Rebirth",
+      "description": "When destroyed, revive with 50% HP (once per battle)",
+      "type": "passive"
+    },
+    {
+      "id": "aether_storm",
+      "name": "Aether Storm",
+      "description": "Deal 100 damage to all enemies and heal all allies for 50 HP",
+      "type": "active",
+      "cooldown": 4
+    },
+    {
+      "id": "immortal_flame",
+      "name": "Immortal Flame",
+      "description": "At the end of your turn, heal 20 HP",
+      "type": "passive"
+    }
+  ],
+  "flavor_text": "The legendary bird of creation and destruction. Said to hold the power of the Aether itself.",
+  "image": "cards/aether_phoenix.png"
+}
+

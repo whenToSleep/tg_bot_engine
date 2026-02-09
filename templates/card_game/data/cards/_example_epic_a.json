@@ -1,0 +1,24 @@
+{
+  "id": "phoenix_knight",
+  "proto_id": "phoenix_knight",
+  "name": "Phoenix Knight",
+  "rarity": "A",
+  "element": "fire",
+  "cost": 6,
+  "type": "minion",
+  "base_attack": 90,
+  "base_defense": 60,
+  "base_hp": 120,
+  "skills": [
+    {
+      "id": "phoenix_strike",
+      "name": "Phoenix Strike",
+      "description": "Deal 60 damage and heal self for 30 HP",
+      "type": "active",
+      "cooldown": 2
+    }
+  ],
+  "flavor_text": "A warrior blessed by the Phoenix. Rises from defeat stronger than before.",
+  "image": "cards/phoenix_knight.png"
+}
+

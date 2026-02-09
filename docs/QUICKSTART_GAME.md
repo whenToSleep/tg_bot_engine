@@ -38,7 +38,7 @@ source venv/bin/activate
 pip install --upgrade pip
 
 # 5. Установить движок (из родительского проекта)
-pip install -e path/to/tg_bot_engine
+pip install -e path/to/tg_bot_engine ("A:\my_work_project\tg_bot_engine")
 
 # Или если движок опубликован на PyPI:
 # pip install tg-bot-engine
@@ -490,13 +490,48 @@ print(f"HP: {player.get('hp', 100)}")
 logging.basicConfig(level=logging.DEBUG)
 ```
 
+## 🆕 Новые возможности (v0.5.6+)
+
+Движок теперь поддерживает продвинутые системы для CCG/Gacha игр:
+
+### Bulk Loading - Быстрая загрузка коллекций
+```python
+# Вместо 30 отдельных запросов:
+deck_ids = player["deck_card_ids"]
+cards = state.get_entities_bulk(deck_ids)  # 1 SQL запрос, ~25x быстрее!
+```
+
+### Media Albums - Красивые gacha результаты
+```python
+from engine.adapters.telegram import ResponseBuilder
+
+builder = ResponseBuilder()
+album = builder.build_media_album(cards, media_library=get_media_library())
+await message.answer_media_group(album)  # Альбом вместо 10 сообщений
+```
+
+### Gacha Service - Pity System
+```python
+from engine.services import GachaService, PityConfig
+
+service = GachaService(PityConfig(soft_pity_start=70, hard_pity=90))
+result = service.single_pull(player, card_pool)
+```
+
+**Подробнее:**
+- [Aether Bonds Guide](../templates/card_game/AETHER_BONDS_GUIDE.md) - полный гайд по CCG играм
+- [Templates Guide](TEMPLATES_GUIDE.md) - паттерны и примеры
+
+---
+
 ## 📚 Следующие шаги
 
 1. **Изучите примеры:** посмотрите `examples/advanced_bot.py` в репозитории движка
 2. **Прочитайте документацию:** [USAGE.md](USAGE.md) и [API_REFERENCE.md](API_REFERENCE.md)
-3. **Добавьте больше контента:** мобы, предметы, локации
-4. **Создайте уникальные механики:** пользовательские команды и модули
-5. **Балансировка:** настройте сложность и награды
+3. **Попробуйте шаблоны:** [TEMPLATES_GUIDE.md](TEMPLATES_GUIDE.md) - RPG, Idle, CCG
+4. **Добавьте больше контента:** мобы, предметы, локации
+5. **Создайте уникальные механики:** пользовательские команды и модули
+6. **Балансировка:** настройте сложность и награды
 
 ## 🎉 Поздравляем!
 

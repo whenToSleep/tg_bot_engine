@@ -1,0 +1,24 @@
+{
+  "id": "fire_mage",
+  "proto_id": "fire_mage",
+  "name": "Fire Mage",
+  "rarity": "B",
+  "element": "fire",
+  "cost": 4,
+  "type": "minion",
+  "base_attack": 50,
+  "base_defense": 30,
+  "base_hp": 60,
+  "skills": [
+    {
+      "id": "fireball",
+      "name": "Fireball",
+      "description": "Deal 30 damage to target enemy",
+      "type": "active",
+      "cooldown": 1
+    }
+  ],
+  "flavor_text": "A novice mage who has mastered the basics of fire magic.",
+  "image": "cards/fire_mage.png"
+}
+
